@@ -1,0 +1,26 @@
+# Stack Docker para infraestrutura local da aplicacao.
+services:
+  postgres:
+    # Imagem oficial do PostgreSQL.
+    image: postgres:16
+    # Nome fixo do container para facilitar comandos docker exec/logs.
+    container_name: agromach-postgres
+    # Reinicia automaticamente caso o Docker reinicie.
+    restart: unless-stopped
+    environment:
+      # Banco padrao criado no primeiro startup.
+      POSTGRES_DB: agromach_db
+      # Usuario administrador da instancia.
+      POSTGRES_USER: postgres
+      # Senha do usuario administrador.
+      POSTGRES_PASSWORD: postgres
+    ports:
+      # host:container -> API conecta em localhost:15432.
+      - "15432:5432"
+    volumes:
+      # Volume persistente para manter dados entre reinicios/updates.
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  # Declaracao do volume de dados do Postgres.
+  postgres_data:

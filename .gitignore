@@ -1,0 +1,43 @@
+HELP.md
+
+# Maven
+target/
+
+# Gradle leftovers (if any)
+.gradle/
+build/
+
+# IDEs
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse / STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache
+bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+
+# Claude Code
+.claude/
+
+# Log files
+*.log
+*.err.log
+*.out.log
