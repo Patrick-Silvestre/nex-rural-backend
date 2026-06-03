@@ -3,6 +3,7 @@ package com.agromach.service;
 import com.agromach.dto.FazendaDto;
 import com.agromach.entity.Fazenda;
 import com.agromach.entity.Usuario;
+import com.agromach.exception.BusinessException;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.FazendaRepository;
 import com.agromach.repository.UsuarioRepository;
@@ -27,6 +28,7 @@ public class FazendaService {
     @Transactional
     public FazendaDto.FazendaResponse create(FazendaDto.FazendaRequest request) {
         Usuario proprietario = findUsuarioById(request.proprietarioId());
+        validateProprietarioDisponivelParaCreate(proprietario.getId());
 
         Fazenda fazenda = Fazenda.builder()
             .nome(request.nome())
@@ -63,6 +65,7 @@ public class FazendaService {
     public FazendaDto.FazendaResponse update(Long id, FazendaDto.FazendaRequest request) {
         Fazenda fazenda = findEntityById(id);
         Usuario proprietario = findUsuarioById(request.proprietarioId());
+        validateProprietarioDisponivelParaUpdate(proprietario.getId(), id);
 
         fazenda.setNome(request.nome());
         fazenda.setLocalizacao(request.localizacao());
@@ -96,6 +99,24 @@ public class FazendaService {
     private Usuario findUsuarioById(Long id) {
         return usuarioRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario nao encontrado com ID " + id));
+    }
+
+    /**
+     * Garante que cada usuario tenha no maximo uma fazenda vinculada no relacionamento 1:1.
+     */
+    private void validateProprietarioDisponivelParaCreate(Long proprietarioId) {
+        if (fazendaRepository.existsByProprietarioId(proprietarioId)) {
+            throw new BusinessException("Usuario ja possui uma fazenda vinculada no relacionamento 1:1");
+        }
+    }
+
+    /**
+     * Garante que a atualizacao nao vincule a fazenda a um usuario que ja possui outra fazenda.
+     */
+    private void validateProprietarioDisponivelParaUpdate(Long proprietarioId, Long fazendaId) {
+        if (fazendaRepository.existsByProprietarioIdAndIdNot(proprietarioId, fazendaId)) {
+            throw new BusinessException("Usuario ja possui outra fazenda vinculada no relacionamento 1:1");
+        }
     }
 
     /**
