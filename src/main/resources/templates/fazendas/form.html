@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${fazenda.id == null ? 'Nova Fazenda' : 'Editar Fazenda'}, ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card p-4">
+                <h6 class="fw-semibold mb-4" th:text="${fazenda.id == null ? 'Nova Fazenda' : 'Editar Fazenda'}">Fazenda</h6>
+                <form th:action="@{/fazendas/save}" method="post">
+                    <input type="hidden" name="id" th:value="${fazenda.id}"/>
+
+                    <div class="mb-3">
+                        <label class="form-label">Nome <span class="text-danger">*</span></label>
+                        <input type="text" name="nome" class="form-control" th:value="${fazenda.nome}" required/>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Localização <span class="text-danger">*</span></label>
+                        <input type="text" name="localizacao" class="form-control" th:value="${fazenda.localizacao}" required/>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tamanho (hectares) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" name="tamanhoHectares" class="form-control" th:value="${fazenda.tamanhoHectares}" required/>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tipo de Produção <span class="text-danger">*</span></label>
+                            <input type="text" name="tipoProducao" class="form-control" th:value="${fazenda.tipoProducao}" placeholder="Ex: Soja, Milho, Café" required/>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Proprietário <span class="text-danger">*</span></label>
+                        <select name="proprietarioId" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option th:each="u : ${usuarios}" th:value="${u.id}" th:text="${u.nome + ' (' + u.email + ')'}"
+                                    th:selected="${u.id == fazenda.proprietarioId}"></option>
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-agro"><i class="bi bi-floppy me-1"></i>Salvar</button>
+                        <a th:href="@{/fazendas}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

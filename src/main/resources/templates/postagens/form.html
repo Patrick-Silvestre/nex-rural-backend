@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(${postagem.id == null ? 'Nova Postagem' : 'Editar Postagem'}, ~{::content})}">
+<body>
+<th:block th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card p-4">
+                <h6 class="fw-semibold mb-4" th:text="${postagem.id == null ? 'Nova Postagem' : 'Editar Postagem'}">Postagem</h6>
+                <form th:action="@{/postagens/save}" method="post">
+                    <input type="hidden" name="id" th:value="${postagem.id}"/>
+                    <div class="mb-3">
+                        <label class="form-label">Título <span class="text-danger">*</span></label>
+                        <input type="text" name="titulo" class="form-control" th:value="${postagem.titulo}" required/>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">Conteúdo <span class="text-danger">*</span></label>
+                        <textarea name="conteudo" class="form-control" rows="8" required th:text="${postagem.conteudo}"></textarea>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-agro"><i class="bi bi-floppy me-1"></i>Salvar</button>
+                        <a th:href="@{/postagens}" class="btn btn-outline-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>
