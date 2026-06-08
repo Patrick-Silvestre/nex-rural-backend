@@ -1,0 +1,21 @@
+# Perfil opcional para usar PostgreSQL local/Docker.
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:15432/agromach_db
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  h2:
+    console:
+      enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC

@@ -1,51 +1,42 @@
-# Configuracoes principais do Spring Boot para a API AgroMach.
+# Configuracoes principais do Spring Boot para o AgroMach.
 spring:
-  # Identificacao da aplicacao no ecossistema Spring (logs, actuator, etc.).
   application:
     name: AgroMach
 
-  # Configuracao de conexao com PostgreSQL.
+  # Banco local padrao para rodar sem Docker/PostgreSQL.
+  # Os dados ficam persistidos em ./data/agromach-local.mv.db.
   datasource:
-    # Porta 15432 = porta externa do container Docker.
-    url: jdbc:postgresql://localhost:15432/agromach_db
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:h2:file:./data/agromach-local;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
 
-  # Configuracao de persistencia JPA/Hibernate.
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
   jpa:
     hibernate:
-      # update = cria/atualiza tabelas automaticamente com base nas entidades.
       ddl-auto: update
-    # Habilita log SQL no console para facilitar debug.
     show-sql: true
     properties:
       hibernate:
-        # Formata SQL no log para leitura humana.
         format_sql: true
         jdbc:
-          # Padroniza datas/horas em UTC no JDBC.
           time_zone: UTC
 
-# Porta HTTP da API.
 server:
   port: 8081
 
-# Configuracoes de autenticacao JWT da aplicacao.
 app:
   jwt:
-    # Chave secreta em Base64 usada para assinar e validar tokens.
     secret: c3VwZXItY2hhdmUtc2VjcmV0YS1wYXJhLWFncm9tYWNoLWp3dC1oczI1Ng==
-    # Tempo de expiracao do token (24h em milissegundos).
     expiration-ms: 86400000
 
-# Configuracoes da documentacao OpenAPI/Swagger.
 springdoc:
   api-docs:
-    # Endpoint JSON do contrato OpenAPI.
     path: /v3/api-docs
   swagger-ui:
-    # URL da interface Swagger.
     path: /swagger-ui.html
-    # Ordena operacoes por metodo HTTP.
     operationsSorter: method

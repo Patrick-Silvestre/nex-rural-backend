@@ -1,6 +1,6 @@
 # AgroMach Backend
 
-Backend completo da plataforma AgroMach em Spring Boot + Java 21 + Maven + PostgreSQL, com arquitetura em camadas, autenticacao JWT, Swagger/OpenAPI e CRUD para todos os modulos.
+Backend completo da plataforma AgroMach em Spring Boot + Java 21 + Maven, com interface web local em Thymeleaf, API REST, autenticacao JWT, Swagger/OpenAPI e CRUD para todos os modulos.
 
 ## Tecnologias
 
@@ -8,7 +8,8 @@ Backend completo da plataforma AgroMach em Spring Boot + Java 21 + Maven + Postg
 - Spring Boot 3.4.x
 - Spring Security + JWT
 - Spring Data JPA
-- PostgreSQL
+- H2 local (padrao, sem Docker)
+- PostgreSQL (perfil opcional `postgres`)
 - Maven
 - Swagger/OpenAPI (springdoc)
 
@@ -45,34 +46,36 @@ src/main/java/com/agromach
 - `application.yml` esta comentado com o significado de cada configuracao Spring.
 - `docker-compose.yml` esta comentado com o papel de cada bloco de infraestrutura.
 
-## Como configurar o banco (PostgreSQL local)
+## Como configurar o banco
 
-### Opcao 1: Docker (recomendado)
+### Opcao 1: H2 local (padrao, recomendado para rodar na maquina)
+
+Nao precisa subir Docker nem instalar PostgreSQL. Ao iniciar a aplicacao, o Spring Boot cria/atualiza um banco H2 persistido em:
+
+```text
+./data/agromach-local.mv.db
+```
+
+Console H2 local:
+
+- URL: `http://localhost:8081/h2-console`
+- JDBC URL: `jdbc:h2:file:./data/agromach-local;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH`
+- User: `sa`
+- Password: deixe em branco
+
+### Opcao 2: PostgreSQL com Docker
 
 ```bash
 docker compose up -d
+mvn spring-boot:run -Dspring-boot.run.profiles=postgres
 ```
 
-Banco criado:
+Banco criado pelo Docker Compose:
 
 - Database: `agromach_db`
 - User: `postgres`
 - Password: `postgres`
 - Port: `15432`
-
-### Opcao 2: PostgreSQL local manual
-
-Crie um banco com as mesmas credenciais do `application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/agromach_db
-    # Se estiver usando o docker-compose deste projeto:
-    # url: jdbc:postgresql://localhost:15432/agromach_db
-    username: postgres
-    password: postgres
-```
 
 ## Como rodar o backend
 
@@ -103,9 +106,12 @@ Add-Content $PROFILE 'Set-Alias mvn "C:\Program Files\JetBrains\IntelliJ IDEA Co
 
 Aplicacao sobe em:
 
-- API: `http://localhost:8081`
+- Interface Thymeleaf: `http://localhost:8081`
+- Login web: `http://localhost:8081/login`
+- API: `http://localhost:8081/api`
 - Swagger UI: `http://localhost:8081/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8081/v3/api-docs`
+- H2 Console local: `http://localhost:8081/h2-console`
 
 ## Seguranca e autenticacao
 
@@ -174,9 +180,26 @@ spring:
       ddl-auto: update
 ```
 
+## Interface web local (Thymeleaf)
+
+A aplicacao tambem funciona como sistema web, nao apenas como API. Depois de rodar `mvn spring-boot:run`, acesse `http://localhost:8081/login` e entre com o admin padrao:
+
+- Email: `admin@agromach.com`
+- Senha: `admin123`
+
+Telas disponíveis:
+
+- Dashboard: `/`
+- Fazendas: `/fazendas`
+- Maquinas: `/maquinas`
+- Funcionarios: `/funcionarios`
+- Produtos: `/produtos`
+- Pedidos: `/pedidos`
+- Postagens: `/postagens`
+
 ## Observacoes
 
-- Projeto sem dados mockados.
+- Projeto sem dados mockados, exceto o admin padrao de desenvolvimento.
 - Estrutura preparada para evolucao com testes, migrations (Flyway/Liquibase) e CI/CD.
 - Banco Docker persistente em volume `agromach_postgres_data`.
 - Admin padrao de desenvolvimento: `admin@agromach.com` / `admin123`.
