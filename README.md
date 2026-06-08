@@ -149,9 +149,31 @@ Usuario admin padrao criado automaticamente no startup (se nao existir):
 - `GET/POST/PUT/DELETE /api/fazendas`
 - `GET/POST/PUT/DELETE /api/maquinas`
 - `GET/POST/PUT/DELETE /api/funcionarios`
+- CRUD 1:N Fazenda -> Funcionarios:
+  - `GET /api/fazendas/{fazendaId}/funcionarios`
+  - `GET /api/fazendas/{fazendaId}/funcionarios/{funcionarioId}`
+  - `POST /api/fazendas/{fazendaId}/funcionarios`
+  - `PUT /api/fazendas/{fazendaId}/funcionarios/{funcionarioId}`
+  - `DELETE /api/fazendas/{fazendaId}/funcionarios/{funcionarioId}`
 - `GET/POST/PUT/DELETE /api/produtos`
 - `GET/POST/PUT/DELETE /api/pedidos`
 - `GET/POST/PUT/DELETE /api/postagens`
+
+## Relacionamentos para apresentacao do trabalho
+
+### CRUD 1:1 Usuario <-> Fazenda
+
+- A entidade `Fazenda` possui um unico `proprietario` (`Usuario`) por `proprietarioId`.
+- A coluna `proprietario_id` e unica, entao um usuario pode ter no maximo uma fazenda.
+- Para testar: crie um usuario, crie uma fazenda informando `proprietarioId` e tente criar outra fazenda com o mesmo `proprietarioId`; a API retorna erro de negocio.
+- As respostas de `GET /api/usuarios` e `GET /api/usuarios/{id}` exibem `fazendaId` e `fazendaNome` quando existir uma fazenda vinculada ao usuario.
+
+### CRUD 1:N Fazenda -> Funcionarios
+
+- Uma `Fazenda` pode possuir varios `Funcionario`.
+- Cada `Funcionario` pertence a uma unica `Fazenda`.
+- Alem do CRUD direto de funcionarios, existem rotas aninhadas em `/api/fazendas/{fazendaId}/funcionarios` para criar, listar, buscar, atualizar e remover funcionarios dentro de uma fazenda especifica.
+- Nas rotas aninhadas, o corpo nao precisa enviar `fazendaId`, pois esse vinculo vem do caminho da URL.
 
 ## Como testar as rotas
 

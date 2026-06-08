@@ -2,6 +2,7 @@ package com.agromach.service;
 
 import com.agromach.dto.AuthDto;
 import com.agromach.dto.UsuarioDto;
+import com.agromach.entity.Fazenda;
 import com.agromach.entity.Role;
 import com.agromach.entity.Usuario;
 import com.agromach.exception.BusinessException;
@@ -80,7 +81,25 @@ public class AuthService {
             usuario.getEmail(),
             usuario.getTelefone(),
             usuario.getDocumento(),
-            usuario.getRole()
+            usuario.getRole(),
+            getFazendaId(usuario),
+            getFazendaNome(usuario)
         );
+    }
+
+    /**
+     * Retorna o ID da fazenda vinculada ao usuario no relacionamento 1:1.
+     */
+    private Long getFazendaId(Usuario usuario) {
+        Fazenda fazenda = usuario.getFazenda();
+        return fazenda != null ? fazenda.getId() : null;
+    }
+
+    /**
+     * Retorna o nome da fazenda vinculada ao usuario no relacionamento 1:1.
+     */
+    private String getFazendaNome(Usuario usuario) {
+        Fazenda fazenda = usuario.getFazenda();
+        return fazenda != null ? fazenda.getNome() : null;
     }
 }

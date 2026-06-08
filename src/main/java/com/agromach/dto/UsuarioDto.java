@@ -54,7 +54,9 @@ public final class UsuarioDto {
         String email,
         String telefone,
         String documento,
-        Role role
+        Role role,
+        Long fazendaId,
+        String fazendaNome
     ) {
     }
 }

@@ -33,6 +33,22 @@ public final class FuncionarioDto {
     ) {
     }
 
+    public record FuncionarioFazendaRequest(
+        @NotBlank(message = "Nome e obrigatorio")
+        String nome,
+
+        @NotBlank(message = "Cargo e obrigatorio")
+        String cargo,
+
+        @NotNull(message = "Salario e obrigatorio")
+        @Positive(message = "Salario deve ser positivo")
+        BigDecimal salario,
+
+        @NotNull(message = "Data de admissao e obrigatoria")
+        LocalDate dataAdmissao
+    ) {
+    }
+
     public record FuncionarioResponse(
         Long id,
         String nome,
