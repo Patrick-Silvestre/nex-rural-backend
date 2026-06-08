@@ -59,10 +59,11 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/login", "/css/**", "/js/**", "/images/**",
                     "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                    "/webjars/**"
+                    "/webjars/**", "/h2-console/**"
                 ).permitAll()
                 .anyRequest().authenticated()
             )
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
             .formLogin(form -> form
                 .loginPage("/login")
                 .defaultSuccessUrl("/", true)

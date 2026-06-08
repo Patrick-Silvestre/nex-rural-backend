@@ -32,16 +32,16 @@
     <nav class="sidebar d-flex flex-column" style="width:240px;flex-shrink:0;">
         <div class="brand"><i class="bi bi-tree-fill me-2"></i>AgroMach</div>
         <ul class="nav flex-column flex-grow-1 pt-2">
-            <li class="nav-item"><a class="nav-link" th:href="@{/}" th:classappend="${#httpServletRequest.requestURI == '/' ? ' active' : ''}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/}" th:classappend="${currentPath == '/' ? ' active' : ''}"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
             <li><span class="nav-section">Gestão</span></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/fazendas}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/fazendas') ? ' active' : ''}"><i class="bi bi-geo-alt"></i> Fazendas</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/maquinas}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/maquinas') ? ' active' : ''}"><i class="bi bi-gear"></i> Máquinas</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/funcionarios') ? ' active' : ''}"><i class="bi bi-people"></i> Funcionários</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/fazendas}" th:classappend="${#strings.startsWith(currentPath, '/fazendas') ? ' active' : ''}"><i class="bi bi-geo-alt"></i> Fazendas</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/maquinas}" th:classappend="${#strings.startsWith(currentPath, '/maquinas') ? ' active' : ''}"><i class="bi bi-gear"></i> Máquinas</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/funcionarios}" th:classappend="${#strings.startsWith(currentPath, '/funcionarios') ? ' active' : ''}"><i class="bi bi-people"></i> Funcionários</a></li>
             <li><span class="nav-section">Mercado</span></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/produtos}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/produtos') ? ' active' : ''}"><i class="bi bi-shop"></i> Produtos</a></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/pedidos}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/pedidos') ? ' active' : ''}"><i class="bi bi-bag-check"></i> Pedidos</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/produtos}" th:classappend="${#strings.startsWith(currentPath, '/produtos') ? ' active' : ''}"><i class="bi bi-shop"></i> Produtos</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/pedidos}" th:classappend="${#strings.startsWith(currentPath, '/pedidos') ? ' active' : ''}"><i class="bi bi-bag-check"></i> Pedidos</a></li>
             <li><span class="nav-section">Comunidade</span></li>
-            <li class="nav-item"><a class="nav-link" th:href="@{/postagens}" th:classappend="${#strings.startsWith(#httpServletRequest.requestURI, '/postagens') ? ' active' : ''}"><i class="bi bi-file-text"></i> Postagens</a></li>
+            <li class="nav-item"><a class="nav-link" th:href="@{/postagens}" th:classappend="${#strings.startsWith(currentPath, '/postagens') ? ' active' : ''}"><i class="bi bi-file-text"></i> Postagens</a></li>
         </ul>
         <div class="p-3 border-top" style="border-color:#2e5c44 !important;">
             <form th:action="@{/logout}" method="post">
