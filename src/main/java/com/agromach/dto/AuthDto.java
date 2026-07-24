@@ -36,6 +36,8 @@ public final class AuthDto {
         @JsonAlias({"document", "cpf", "cnpj"})
         String documento,
 
+        // Auto cadastro so pode escolher CLIENTE ou PRESTADOR; qualquer outro valor (inclusive ADMIN)
+        // e ignorado pelo AuthService e cai no padrao CLIENTE. Ver AuthService.register().
         @JsonAlias({"perfil", "tipoUsuario"})
         Role role
     ) {

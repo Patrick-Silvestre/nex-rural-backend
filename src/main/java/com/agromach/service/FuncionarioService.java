@@ -6,6 +6,7 @@ import com.agromach.entity.Funcionario;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.FazendaRepository;
 import com.agromach.repository.FuncionarioRepository;
+import com.agromach.security.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class FuncionarioService {
     @Transactional
     public FuncionarioDto.FuncionarioResponse create(FuncionarioDto.FuncionarioRequest request) {
         Fazenda fazenda = findFazendaById(request.fazendaId());
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
 
         Funcionario funcionario = Funcionario.builder()
             .nome(request.nome())
@@ -62,7 +64,9 @@ public class FuncionarioService {
     @Transactional
     public FuncionarioDto.FuncionarioResponse update(Long id, FuncionarioDto.FuncionarioRequest request) {
         Funcionario funcionario = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(funcionario.getFazenda().getProprietario().getId());
         Fazenda fazenda = findFazendaById(request.fazendaId());
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
 
         funcionario.setNome(request.nome());
         funcionario.setCargo(request.cargo());
@@ -79,6 +83,7 @@ public class FuncionarioService {
     @Transactional
     public void delete(Long id) {
         Funcionario funcionario = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(funcionario.getFazenda().getProprietario().getId());
         funcionarioRepository.delete(funcionario);
     }
 

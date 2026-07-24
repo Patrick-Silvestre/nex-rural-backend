@@ -6,6 +6,7 @@ import com.agromach.entity.Usuario;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.ProdutoMarketplaceRepository;
 import com.agromach.repository.UsuarioRepository;
+import com.agromach.security.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class ProdutoMarketplaceService {
      */
     @Transactional
     public ProdutoMarketplaceDto.ProdutoMarketplaceResponse create(ProdutoMarketplaceDto.ProdutoMarketplaceRequest request) {
+        SecurityUtils.requireOwnerOrAdmin(request.vendedorId());
         Usuario vendedor = findUsuarioById(request.vendedorId());
 
         ProdutoMarketplace produto = ProdutoMarketplace.builder()
@@ -62,6 +64,8 @@ public class ProdutoMarketplaceService {
     @Transactional
     public ProdutoMarketplaceDto.ProdutoMarketplaceResponse update(Long id, ProdutoMarketplaceDto.ProdutoMarketplaceRequest request) {
         ProdutoMarketplace produto = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(produto.getVendedor().getId());
+        SecurityUtils.requireOwnerOrAdmin(request.vendedorId());
         Usuario vendedor = findUsuarioById(request.vendedorId());
 
         produto.setTitulo(request.titulo());
@@ -79,6 +83,7 @@ public class ProdutoMarketplaceService {
     @Transactional
     public void delete(Long id) {
         ProdutoMarketplace produto = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(produto.getVendedor().getId());
         produtoMarketplaceRepository.delete(produto);
     }
 

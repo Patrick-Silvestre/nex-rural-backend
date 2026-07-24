@@ -6,6 +6,7 @@ import com.agromach.entity.Usuario;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.FazendaRepository;
 import com.agromach.repository.UsuarioRepository;
+import com.agromach.security.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class FazendaService {
      */
     @Transactional
     public FazendaDto.FazendaResponse create(FazendaDto.FazendaRequest request) {
+        SecurityUtils.requireOwnerOrAdmin(request.proprietarioId());
         Usuario proprietario = findUsuarioById(request.proprietarioId());
 
         Fazenda fazenda = Fazenda.builder()
@@ -62,6 +64,8 @@ public class FazendaService {
     @Transactional
     public FazendaDto.FazendaResponse update(Long id, FazendaDto.FazendaRequest request) {
         Fazenda fazenda = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
+        SecurityUtils.requireOwnerOrAdmin(request.proprietarioId());
         Usuario proprietario = findUsuarioById(request.proprietarioId());
 
         fazenda.setNome(request.nome());
@@ -79,6 +83,7 @@ public class FazendaService {
     @Transactional
     public void delete(Long id) {
         Fazenda fazenda = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
         fazendaRepository.delete(fazenda);
     }
 

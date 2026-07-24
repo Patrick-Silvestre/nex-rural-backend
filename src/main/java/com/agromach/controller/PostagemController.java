@@ -43,7 +43,7 @@ public class PostagemController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<PostagemDto.PostagemResponse>> findAll() {
         return ResponseEntity.ok(postagemService.findAll());
     }
@@ -52,7 +52,7 @@ public class PostagemController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PostagemDto.PostagemResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(postagemService.findById(id));
     }

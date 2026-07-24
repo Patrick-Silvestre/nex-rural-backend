@@ -43,7 +43,7 @@ public class PedidoController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<PedidoDto.PedidoResponse>> findAll() {
         return ResponseEntity.ok(pedidoService.findAll());
     }
@@ -52,7 +52,7 @@ public class PedidoController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<PedidoDto.PedidoResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(pedidoService.findById(id));
     }

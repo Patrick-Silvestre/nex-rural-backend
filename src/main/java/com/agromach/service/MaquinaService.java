@@ -6,6 +6,7 @@ import com.agromach.entity.Maquina;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.FazendaRepository;
 import com.agromach.repository.MaquinaRepository;
+import com.agromach.security.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class MaquinaService {
     @Transactional
     public MaquinaDto.MaquinaResponse create(MaquinaDto.MaquinaRequest request) {
         Fazenda fazenda = findFazendaById(request.fazendaId());
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
 
         Maquina maquina = Maquina.builder()
             .nome(request.nome())
@@ -63,7 +65,9 @@ public class MaquinaService {
     @Transactional
     public MaquinaDto.MaquinaResponse update(Long id, MaquinaDto.MaquinaRequest request) {
         Maquina maquina = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(maquina.getFazenda().getProprietario().getId());
         Fazenda fazenda = findFazendaById(request.fazendaId());
+        SecurityUtils.requireOwnerOrAdmin(fazenda.getProprietario().getId());
 
         maquina.setNome(request.nome());
         maquina.setTipo(request.tipo());
@@ -81,6 +85,7 @@ public class MaquinaService {
     @Transactional
     public void delete(Long id) {
         Maquina maquina = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(maquina.getFazenda().getProprietario().getId());
         maquinaRepository.delete(maquina);
     }
 

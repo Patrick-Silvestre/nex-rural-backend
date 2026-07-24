@@ -42,7 +42,7 @@ public class ProdutoMarketplaceController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<ProdutoMarketplaceDto.ProdutoMarketplaceResponse>> findAll() {
         return ResponseEntity.ok(produtoMarketplaceService.findAll());
     }
@@ -51,7 +51,7 @@ public class ProdutoMarketplaceController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ProdutoMarketplaceDto.ProdutoMarketplaceResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(produtoMarketplaceService.findById(id));
     }

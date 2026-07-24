@@ -9,6 +9,7 @@ import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.PedidoRepository;
 import com.agromach.repository.ProdutoMarketplaceRepository;
 import com.agromach.repository.UsuarioRepository;
+import com.agromach.security.SecurityUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ public class PedidoService {
      */
     @Transactional
     public PedidoDto.PedidoResponse create(PedidoDto.PedidoRequest request) {
+        SecurityUtils.requireOwnerOrAdmin(request.compradorId());
         Usuario comprador = findUsuarioById(request.compradorId());
         ProdutoMarketplace produto = findProdutoById(request.produtoId());
 
@@ -65,6 +67,8 @@ public class PedidoService {
     @Transactional
     public PedidoDto.PedidoResponse update(Long id, PedidoDto.PedidoRequest request) {
         Pedido pedido = findEntityById(id);
+        // Comprador ou vendedor do produto podem alterar o pedido (ex: vendedor aprova/cancela).
+        SecurityUtils.requireAnyOwnerOrAdmin(pedido.getComprador().getId(), pedido.getProduto().getVendedor().getId());
         Usuario comprador = findUsuarioById(request.compradorId());
         ProdutoMarketplace produto = findProdutoById(request.produtoId());
 
@@ -81,6 +85,7 @@ public class PedidoService {
     @Transactional
     public void delete(Long id) {
         Pedido pedido = findEntityById(id);
+        SecurityUtils.requireAnyOwnerOrAdmin(pedido.getComprador().getId(), pedido.getProduto().getVendedor().getId());
         pedidoRepository.delete(pedido);
     }
 

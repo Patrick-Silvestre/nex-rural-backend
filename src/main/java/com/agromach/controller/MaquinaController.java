@@ -43,7 +43,7 @@ public class MaquinaController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<MaquinaDto.MaquinaResponse>> findAll() {
         return ResponseEntity.ok(maquinaService.findAll());
     }
@@ -52,7 +52,7 @@ public class MaquinaController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<MaquinaDto.MaquinaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(maquinaService.findById(id));
     }

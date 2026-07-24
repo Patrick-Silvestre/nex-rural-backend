@@ -43,7 +43,7 @@ public class FuncionarioController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<FuncionarioDto.FuncionarioResponse>> findAll() {
         return ResponseEntity.ok(funcionarioService.findAll());
     }
@@ -52,7 +52,7 @@ public class FuncionarioController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<FuncionarioDto.FuncionarioResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(funcionarioService.findById(id));
     }

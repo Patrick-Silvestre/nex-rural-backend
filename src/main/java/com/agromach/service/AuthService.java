@@ -35,8 +35,8 @@ public class AuthService {
             throw new BusinessException("Email ja cadastrado");
         }
 
-        // Perfil padrao para auto cadastro quando o cliente nao informa role.
-        Role role = request.role() != null ? request.role() : Role.CLIENTE;
+        // Auto cadastro publico so pode virar CLIENTE ou PRESTADOR; ADMIN so via /api/usuarios (admin).
+        Role role = request.role() == Role.PRESTADOR ? Role.PRESTADOR : Role.CLIENTE;
 
         Usuario usuario = Usuario.builder()
             .nome(request.nome())

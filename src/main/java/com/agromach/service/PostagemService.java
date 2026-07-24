@@ -6,6 +6,7 @@ import com.agromach.entity.Usuario;
 import com.agromach.exception.ResourceNotFoundException;
 import com.agromach.repository.PostagemRepository;
 import com.agromach.repository.UsuarioRepository;
+import com.agromach.security.SecurityUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class PostagemService {
      */
     @Transactional
     public PostagemDto.PostagemResponse create(PostagemDto.PostagemRequest request) {
+        SecurityUtils.requireOwnerOrAdmin(request.autorId());
         Usuario autor = findUsuarioById(request.autorId());
 
         Postagem postagem = Postagem.builder()
@@ -62,6 +64,8 @@ public class PostagemService {
     @Transactional
     public PostagemDto.PostagemResponse update(Long id, PostagemDto.PostagemRequest request) {
         Postagem postagem = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(postagem.getAutor().getId());
+        SecurityUtils.requireOwnerOrAdmin(request.autorId());
         Usuario autor = findUsuarioById(request.autorId());
 
         postagem.setTitulo(request.titulo());
@@ -77,6 +81,7 @@ public class PostagemService {
     @Transactional
     public void delete(Long id) {
         Postagem postagem = findEntityById(id);
+        SecurityUtils.requireOwnerOrAdmin(postagem.getAutor().getId());
         postagemRepository.delete(postagem);
     }
 

@@ -43,7 +43,7 @@ public class FazendaController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<FazendaDto.FazendaResponse>> findAll() {
         return ResponseEntity.ok(fazendaService.findAll());
     }
@@ -52,7 +52,7 @@ public class FazendaController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<FazendaDto.FazendaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(fazendaService.findById(id));
     }

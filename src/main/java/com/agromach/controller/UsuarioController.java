@@ -43,7 +43,7 @@ public class UsuarioController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<List<UsuarioDto.UsuarioResponse>> findAll() {
         return ResponseEntity.ok(usuarioService.findAll());
     }
@@ -52,7 +52,7 @@ public class UsuarioController {
      * Retorna os dados solicitados conforme os criterios da operacao.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UsuarioDto.UsuarioResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.findById(id));
     }

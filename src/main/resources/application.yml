@@ -5,11 +5,12 @@ spring:
     name: AgroMach
 
   # Configuracao de conexao com PostgreSQL.
+  # Valores apos ":" sao fallback de dev local; em producao defina as env vars (nunca versione credenciais reais).
   datasource:
     # Porta 15432 = porta externa do container Docker.
-    url: jdbc:postgresql://localhost:15432/agromach_db
-    username: postgres
-    password: postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:15432/agromach_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   # Configuracao de persistencia JPA/Hibernate.
@@ -35,9 +36,15 @@ server:
 app:
   jwt:
     # Chave secreta em Base64 usada para assinar e validar tokens.
-    secret: c3VwZXItY2hhdmUtc2VjcmV0YS1wYXJhLWFncm9tYWNoLWp3dC1oczI1Ng==
+    # Fallback de dev local (rotacionada); em producao defina JWT_SECRET com um valor proprio e nunca versione.
+    secret: ${JWT_SECRET:D6TSkqfWb+6V5UUNNDM8OxsLgVz8ygaAD16MlsbEhRg=}
     # Tempo de expiracao do token (24h em milissegundos).
-    expiration-ms: 86400000
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  bootstrap:
+    # Cria o admin padrao no startup se ainda nao existir. Desative em producao via APP_BOOTSTRAP_SEED_ADMIN=false.
+    seed-admin: ${APP_BOOTSTRAP_SEED_ADMIN:true}
+    # Fallback de dev local; em producao defina APP_BOOTSTRAP_ADMIN_PASSWORD com uma senha forte propria.
+    admin-password: ${APP_BOOTSTRAP_ADMIN_PASSWORD:admin123}
 
 # Configuracoes da documentacao OpenAPI/Swagger.
 springdoc:
