@@ -35,6 +35,8 @@ public class FazendaService {
             .localizacao(request.localizacao())
             .tamanhoHectares(request.tamanhoHectares())
             .tipoProducao(request.tipoProducao())
+            .latitude(request.latitude())
+            .longitude(request.longitude())
             .proprietario(proprietario)
             .build();
 
@@ -72,6 +74,8 @@ public class FazendaService {
         fazenda.setLocalizacao(request.localizacao());
         fazenda.setTamanhoHectares(request.tamanhoHectares());
         fazenda.setTipoProducao(request.tipoProducao());
+        fazenda.setLatitude(request.latitude());
+        fazenda.setLongitude(request.longitude());
         fazenda.setProprietario(proprietario);
 
         return toResponse(fazendaRepository.save(fazenda));
@@ -113,6 +117,8 @@ public class FazendaService {
             fazenda.getLocalizacao(),
             fazenda.getTamanhoHectares(),
             fazenda.getTipoProducao(),
+            fazenda.getLatitude(),
+            fazenda.getLongitude(),
             fazenda.getProprietario().getId(),
             fazenda.getProprietario().getNome()
         );

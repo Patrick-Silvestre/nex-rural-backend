@@ -1,6 +1,13 @@
-# AgroMach Backend
+# AgroMach Backend (API do Nex-Rural)
 
-Backend completo da plataforma AgroMach em Spring Boot + Java 21 + Maven + PostgreSQL, com arquitetura em camadas, autenticacao JWT, Swagger/OpenAPI e CRUD para todos os modulos.
+Backend da plataforma Nex-Rural em Spring Boot + Java 21 + Maven + PostgreSQL: uma API REST pura (sem tela server-rendered) consumida pelo frontend Next.js do repositorio `agromachmonorepo`.
+
+O produto hoje tem duas frentes:
+
+1. **Cockpit operacional** - fazenda, maquinas, funcionarios, pasto/talhao/confinamento (com o que esta ocupando cada area agora), avisos de manejo (fertilizacao, preparo de solo, vacinacao) e previsao do tempo da propriedade.
+2. **Rede de contatos** - diretorio de veterinarios, agronomos, fornecedores de insumo/semente e de gado (com ou sem rastreabilidade), sem carrinho ou pedido - so contato direto.
+
+> O antigo marketplace de maquinas/insumos com pedido (`ProdutoMarketplace`/`Pedido`), o feed social (`Postagem`) e a interface administrativa em Thymeleaf (`web/` + `templates/`) foram removidos. Eram escopo do TCC original; o produto foi reduzido de proposito para caber num time pequeno e evitar competir de frente com marketplaces ja estabelecidos (MF Rural, Agrofy, Agrishare). Se precisar recuperar algo, esta no historico do git.
 
 ## Tecnologias
 
@@ -11,39 +18,33 @@ Backend completo da plataforma AgroMach em Spring Boot + Java 21 + Maven + Postg
 - PostgreSQL
 - Maven
 - Swagger/OpenAPI (springdoc)
+- Open-Meteo (previsao do tempo, API publica sem chave)
 
 ## Estrutura do Projeto
 
 ```text
 src/main/java/com/agromach
-  config
-  controller
-  dto
-  entity
-  exception
-  repository
-  security
-  service
-  util
+  config       # CORS, OpenAPI, bootstrap do admin padrao
+  controller   # Endpoints REST
+  dto          # Contratos de entrada/saida (records)
+  entity       # Mapeamento JPA
+  exception    # Tratamento global de erros
+  repository   # Spring Data JPA
+  security     # JWT, filtro de autenticacao, checagem de posse (SecurityUtils)
+  service      # Regras de negocio
+  util         # Constantes de rota (ApiPaths)
 ```
 
 ## Arquitetura (Spring Boot)
 
 - `controller`: camada HTTP (endpoints REST, validacao de entrada, status code)
-- `service`: regras de negocio e orquestracao entre componentes
-- `repository`: acesso a dados via Spring Data JPA
+- `service`: regras de negocio, orquestracao entre componentes e checagem de posse (ex: so o dono da fazenda ou um ADMIN pode editar/apagar seus registros)
+- `repository`: acesso a dados via Spring Data JPA (sem SQL nativo em nenhum lugar do projeto)
 - `entity`: mapeamento JPA das tabelas do banco
 - `dto`: contratos de entrada/saida da API
-- `security`: JWT, filtro de autenticacao e regras de autorizacao
+- `security`: JWT, filtro de autenticacao e `SecurityUtils` (utilitario de ownership usado pelos services)
 - `config`: configuracoes transversais (CORS, OpenAPI, bootstrap de dados)
 - `exception`: padronizacao de erros da API
-
-## Codigo Comentado
-
-- Todas as classes em `src/main/java` possuem JavaDoc de responsabilidade.
-- Metodos principais tambem estao comentados para facilitar entendimento do fluxo.
-- `application.yml` esta comentado com o significado de cada configuracao Spring.
-- `docker-compose.yml` esta comentado com o papel de cada bloco de infraestrutura.
 
 ## Como configurar o banco (PostgreSQL local)
 
@@ -62,17 +63,7 @@ Banco criado:
 
 ### Opcao 2: PostgreSQL local manual
 
-Crie um banco com as mesmas credenciais do `application.yml`:
-
-```yaml
-spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/agromach_db
-    # Se estiver usando o docker-compose deste projeto:
-    # url: jdbc:postgresql://localhost:15432/agromach_db
-    username: postgres
-    password: postgres
-```
+Crie um banco e aponte as variaveis de ambiente da secao abaixo para ele (nao precisa editar `application.yml` diretamente).
 
 ## Como rodar o backend
 
@@ -88,17 +79,10 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-Se o comando `mvn` nao estiver no PATH do Windows, use diretamente:
+Se o comando `mvn` nao estiver no PATH do Windows, use o Maven que vem junto do IntelliJ:
 
 ```powershell
 & "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.2\plugins\maven\lib\maven3\bin\mvn.cmd" spring-boot:run
-```
-
-Para tornar `mvn` definitivo no PowerShell:
-
-```powershell
-if (!(Test-Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force }
-Add-Content $PROFILE 'Set-Alias mvn "C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2025.2\plugins\maven\lib\maven3\bin\mvn.cmd"'
 ```
 
 Aplicacao sobe em:
@@ -107,51 +91,58 @@ Aplicacao sobe em:
 - Swagger UI: `http://localhost:8081/swagger-ui.html`
 - OpenAPI JSON: `http://localhost:8081/v3/api-docs`
 
+## Variaveis de ambiente (segredos)
+
+Nenhum segredo real deve ficar hardcoded fora do proprio ambiente. `application.yml` ja usa fallback de dev local, mas em qualquer ambiente que nao seja seu localhost defina:
+
+| Variavel | Para que serve | Fallback de dev |
+|---|---|---|
+| `DB_URL` | URL JDBC do Postgres | `jdbc:postgresql://localhost:15432/agromach_db` |
+| `DB_USERNAME` | Usuario do banco | `postgres` |
+| `DB_PASSWORD` | Senha do banco | `postgres` |
+| `JWT_SECRET` | Chave HS256 que assina os tokens | valor de dev fixo no `application.yml` |
+| `JWT_EXPIRATION_MS` | Validade do token (ms) | `86400000` (24h) |
+| `APP_BOOTSTRAP_SEED_ADMIN` | Se `true`, cria o admin padrao no startup | `true` |
+| `APP_BOOTSTRAP_ADMIN_PASSWORD` | Senha do admin padrao seedado | `admin123` (inseguro - troque sempre que sair do seu localhost) |
+
+Em producao, defina pelo menos `JWT_SECRET`, `DB_PASSWORD` e `APP_BOOTSTRAP_ADMIN_PASSWORD` (ou `APP_BOOTSTRAP_SEED_ADMIN=false`) com valores proprios.
+
 ## Seguranca e autenticacao
 
-- Senhas criptografadas com BCrypt
-- JWT Bearer Token
-- Rotas publicas:
-  - `POST /auth/register` e `POST /api/auth/register`
-  - `POST /auth/login` e `POST /api/auth/login`
-  - `GET /api/**` (somente leitura para facilitar testes de frontend)
-  - Swagger/OpenAPI
-- Demais rotas exigem token
+- Senhas com BCrypt.
+- JWT Bearer Token, unica cadeia de filtros stateless (nao ha mais sessao/cookie - o backend e so API).
+- Rotas publicas: `POST /auth/register`, `POST /auth/login` (e aliases `/api/auth/**`), Swagger/OpenAPI.
+- **Todo o resto exige token**, inclusive `GET /api/**` (antes era publico; foi fechado por ser um risco de exposicao de dado pessoal).
+- Cadastro publico (`/auth/register`) so cria `CLIENTE` ou `PRESTADOR`. Qualquer outro valor enviado no campo `role` (inclusive `ADMIN`) e ignorado e cai para `CLIENTE`. Promover alguem a `ADMIN` so e possivel via `PUT /api/usuarios/{id}` por outro `ADMIN`.
+- Toda escrita (`create`/`update`/`delete`) em Fazenda, Maquina, Funcionario, Area de Producao, Aviso e Profissional so e permitida para o dono do registro (direto ou via fazenda) ou para um `ADMIN` - ver `security/SecurityUtils.java`.
 
-Usuario admin padrao criado automaticamente no startup (se nao existir):
+Usuario admin padrao criado automaticamente no startup (se nao existir e `APP_BOOTSTRAP_SEED_ADMIN=true`):
 
 - Email: `admin@agromach.com`
-- Senha: `admin123`
-
-### Roles
-
-- `CLIENTE` e `PRESTADOR` recebem permissao `ROLE_USER`
-- `ADMIN` recebe `ROLE_ADMIN` e `ROLE_USER`
-- Endpoints de escrita (`POST/PUT/DELETE`) exigem autenticacao por role
+- Senha: definida por `APP_BOOTSTRAP_ADMIN_PASSWORD` (padrao de dev: `admin123`)
 
 ## Principais endpoints
 
 ### Autenticacao
 
-- `POST /auth/register`
-- `POST /auth/login`
-- Alias suportados: `POST /api/auth/register`, `POST /api/auth/login`, `POST /auth/signup`, `POST /auth/signin`
-- Campos aceitos no JSON:
-  - Cadastro: `nome`/`name`, `email`/`username`, `senha`/`password`, `telefone`/`phone`, `documento`/`document`, `role`
-  - Login: `email`/`username`, `senha`/`password`
-- Campos de resposta:
-  - Token: `token` e `accessToken`
-  - Usuario: `usuario` e `user`
+- `POST /auth/register` - campos: `nome`/`name`, `email`/`username`, `senha`/`password`, `telefone`/`phone`, `documento`/`document`, `role` (so `CLIENTE` ou `PRESTADOR` tem efeito)
+- `POST /auth/login` - campos: `email`/`username`, `senha`/`password`
+- Resposta: `token`/`accessToken` + dados do `usuario`/`user`
+
+### Cockpit
+
+- `GET /api/dashboard` - dashboard da primeira fazenda do usuario logado
+- `GET /api/dashboard/{fazendaId}` - dashboard de uma fazenda especifica
 
 ### CRUDs
 
-- `GET/POST/PUT/DELETE /api/usuarios`
+- `GET/POST/PUT/DELETE /api/usuarios` (escrita restrita a `ADMIN`)
 - `GET/POST/PUT/DELETE /api/fazendas`
 - `GET/POST/PUT/DELETE /api/maquinas`
 - `GET/POST/PUT/DELETE /api/funcionarios`
-- `GET/POST/PUT/DELETE /api/produtos`
-- `GET/POST/PUT/DELETE /api/pedidos`
-- `GET/POST/PUT/DELETE /api/postagens`
+- `GET/POST/PUT/DELETE /api/areas-producao` (pasto/talhao/confinamento)
+- `GET/POST/PUT/DELETE /api/avisos` (fertilizacao/preparo de solo/vacinacao)
+- `GET/POST/PUT/DELETE /api/profissionais` (veterinario/agronomo/fornecedor/trabalhador de campo)
 
 ## Como testar as rotas
 
@@ -161,22 +152,17 @@ Usuario admin padrao criado automaticamente no startup (se nao existir):
    ```
    Bearer SEU_TOKEN
    ```
-4. Teste os endpoints protegidos.
+4. Cadastre uma fazenda em `POST /api/fazendas` (com `latitude`/`longitude` se quiser testar o clima).
+5. Cadastre uma area de producao em `POST /api/areas-producao` apontando para essa fazenda.
+6. Confira tudo junto em `GET /api/dashboard`.
 
 ## Geracao de schema
 
-O schema e gerado automaticamente pelo Hibernate com:
-
-```yaml
-spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
-```
+O schema e gerado automaticamente pelo Hibernate com `ddl-auto: update`. Nao ha Flyway/Liquibase ainda (ver Observacoes).
 
 ## Observacoes
 
-- Projeto sem dados mockados.
-- Estrutura preparada para evolucao com testes, migrations (Flyway/Liquibase) e CI/CD.
+- Sem testes automatizados ainda (so o teste de contexto padrao do Spring Boot). Maior risco tecnico do projeto hoje.
+- Sem migrations (Flyway/Liquibase) - schema depende do `ddl-auto: update`.
+- Clima usa a API publica Open-Meteo (`https://open-meteo.com`), sem chave de API; se a fazenda nao tiver `latitude`/`longitude`, o dashboard simplesmente omite o clima.
 - Banco Docker persistente em volume `agromach_postgres_data`.
-- Admin padrao de desenvolvimento: `admin@agromach.com` / `admin123`.

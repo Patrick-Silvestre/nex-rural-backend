@@ -5,5 +5,6 @@ package com.agromach.entity;
  */
 public enum StatusMaquina {
     OPERACIONAL,
-    MANUTENCAO
+    MANUTENCAO,
+    QUEBRADA
 }

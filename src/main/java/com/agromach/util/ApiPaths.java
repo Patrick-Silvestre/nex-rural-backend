@@ -13,7 +13,8 @@ public final class ApiPaths {
     public static final String FAZENDAS = "/api/fazendas";
     public static final String MAQUINAS = "/api/maquinas";
     public static final String FUNCIONARIOS = "/api/funcionarios";
-    public static final String PRODUTOS = "/api/produtos";
-    public static final String PEDIDOS = "/api/pedidos";
-    public static final String POSTAGENS = "/api/postagens";
+    public static final String AREAS_PRODUCAO = "/api/areas-producao";
+    public static final String AVISOS = "/api/avisos";
+    public static final String PROFISSIONAIS = "/api/profissionais";
+    public static final String DASHBOARD = "/api/dashboard";
 }

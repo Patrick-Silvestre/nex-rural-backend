@@ -26,6 +26,10 @@ public final class FazendaDto {
         @NotBlank(message = "Tipo de producao e obrigatorio")
         String tipoProducao,
 
+        Double latitude,
+
+        Double longitude,
+
         @NotNull(message = "ID do proprietario e obrigatorio")
         Long proprietarioId
     ) {
@@ -37,6 +41,8 @@ public final class FazendaDto {
         String localizacao,
         Double tamanhoHectares,
         String tipoProducao,
+        Double latitude,
+        Double longitude,
         Long proprietarioId,
         String proprietarioNome
     ) {
